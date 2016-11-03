@@ -3,7 +3,7 @@
 
 namespace topshelfdesign;
 
-class SvgBlock {
+class svg_block {
 
   function __construct(){
 
