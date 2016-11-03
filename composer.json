@@ -1,0 +1,25 @@
+{
+  "name": "topshelfdesign/svg_block",
+  "type": "library",
+  "description": "for creating multi line blocked-out text blocks",
+  "keywords": ["svg", "design"],
+  "homepage": "https://github.com/tsd-development/svg-block",
+  "license": "MIT",
+  "authors": [
+      {
+          "name": "Gregg Hurson",
+          "email": "gregg@topshelfdesign.net",
+          "homepage": "http://topshelfdesign.net",
+          "role": "Developer"
+      }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+      "php": ">=5.3.0"
+  },
+  "autoload": {
+    "psr-4": {
+        "topshelfdesign\\": "src/"
+    }
+  }
+}
