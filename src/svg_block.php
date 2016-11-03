@@ -3,63 +3,73 @@
 
 namespace topshelfdesign;
 
-class svg_block {
+class svg_block
+{
 
-  function __construct()
-      {
-          $this->lines = [];
-          $this->width = 130;
-          $this->height = 70;
-          $this->line_height = 15;
-          $this->y_start = 15;
-          $this->font_weight = 800;
-          $this->ID = "svg-" . rand(0, 9999);
-          $this->box_offset = 2;
-          $this->percent_width = 100;
-      }
+    function __construct()
+    {
+        $this->lines = [];
+        $this->width = 130;
+        $this->height = 70;
+        $this->line_height = 15;
+        $this->y_start = 15;
+        $this->font_weight = 800;
+        $this->ID = "svg-" . rand(0, 9999);
+        $this->box_offset = 2;
+        $this->percent_width = 100;
+        $this->class= '';
+    }
 
-      public function set_weight($weight)
-      {
-          $this->font_weight = $weight;
-      }
+    public function add_class($class){
+        $this->class .= "$class ";
+    }
 
-      public function set_width($percentage)
-      {
-          $this->percent_width = $percentage;
-      }
+    public function set_offset($offset){
+        $this->box_offset = $offset;
+    }
 
-      public function add_line($text)
-      {
-          $this->lines[] = $text;
-      }
+    public function set_weight($weight)
+    {
+        $this->font_weight = $weight;
+    }
 
-      protected function calculate_viewbox_dimensions()
-      {
-          $this->height = $this->line_height * count($this->lines) + ($this->box_offset * 2);
-      }
+    public function set_width($percentage)
+    {
+        $this->percent_width = $percentage;
+    }
 
-      public function output_svg()
-      {
+    public function add_line($text)
+    {
+        $this->lines[] = $text;
+    }
 
-          $text = '';
+    protected function calculate_viewbox_dimensions()
+    {
+        $this->height = $this->line_height * count($this->lines) + ($this->box_offset * 2);
+    }
 
-          foreach ($this->lines as $c => $line):
-              $y_pos = $c * $this->line_height + $this->y_start;
-              $text .= "<text class='the-text' x='$this->box_offset' y='$y_pos'>$line</text>";
-          endforeach;
+    public function output_svg()
+    {
 
-          $this->calculate_viewbox_dimensions();
+        $text = '';
+
+        foreach ($this->lines as $c => $line):
+            $y_pos = $c * $this->line_height + $this->y_start;
+            $text .= "<text class='the-text' x='$this->box_offset' y='$y_pos'>$line</text>";
+        endforeach;
+
+        $this->calculate_viewbox_dimensions();
 
 
-          print "
+        print "
 
               <svg version='1.1'
               id='{$this->ID}'
                xmlns='http://www.w3.org/2000/svg'
                xmlns:xlink='http://www.w3.org/1999/xlink'
-               viewBox='0 0 $this->width $this->height'
                style='width: $this->percent_width%;'
                preserveAspectRatio='xMidYMid meet'
+               class='$this->class'
                xml:space='preserve'
                >
                 <style>
@@ -73,8 +83,8 @@ class svg_block {
 
               <script>
 
-              var ctx = $('#{$this->ID}'),
-              textElm = ctx.find('.the-text');
+              var svg = $('#{$this->ID}'),
+              textElm = svg.find('.the-text');
 
 
               textElm.each(function(){
@@ -82,7 +92,6 @@ class svg_block {
                   var SVGRect = $(this)[0].getBBox();
                   var offset = $this->box_offset;
 
-                  console.log(SVGRect);
 
                   var coord = {
                     x: SVGRect.x - offset,
@@ -99,11 +108,11 @@ class svg_block {
                   rect.setAttribute('height', coord.height);
                   rect.setAttribute('fill', 'white');
 
-                  ctx.prepend(rect);
+                  svg.prepend(rect);
 
               });
 
-              var rect = ctx.find('rect');
+              var rect = svg.find('rect');
               var bounds = {
                   x: new Array(),
                   y: new Array(),
@@ -121,6 +130,7 @@ class svg_block {
 
               });
 
+
               bounds.x = {min: Math.min.apply(Math, bounds.x), max: Math.max.apply(Math, bounds.x)};
               bounds.y = {min: Math.min.apply(Math, bounds.y), max: Math.max.apply(Math, bounds.y)};
               bounds.width = Math.max.apply(Math, bounds.width);
@@ -129,8 +139,10 @@ class svg_block {
               bounds.vy = bounds.y.min;
               bounds.vw = bounds.width;
               bounds.vh = Math.abs(bounds.y.min) + bounds.y.max + bounds.height;
+              console.log(bounds.vw);
 
-              ctx.attr('viewBox', '0 ' + bounds.vy + ' ' + bounds.vw + ' ' + bounds.vh);
+              svg[0].setAttribute('viewBox', '0 ' + bounds.vy + ' ' + bounds.vw + ' ' + bounds.vh);
+
 
               </script>
 
@@ -138,8 +150,7 @@ class svg_block {
           ";
 
 
-      }
-
+    }
 
 
 }
