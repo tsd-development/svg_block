@@ -83,69 +83,102 @@ class svg_block
 
               <script>
 
-              var svg = $('#{$this->ID}'),
-              textElm = svg.find('.the-text');
+              (function($) {
+              $.fn.svgBlock = function(params) {
 
+                var obj = $(this);
+                var lines = $(this).find('text');
+                var line_height = params.line_height ? params.line_height : 15;
+                var offset = params.offset ? params.offset : 0;
+                var percent_width = params.percent_width ? params.percent_width : 100;
+                var color = params.color ? params.color : 'black';
+                var background = params.background ? params.background : 'white';
+                var left_offset = typeof(params.left_offset) !== 'undefined' ? params.left_offset : true;
 
-              textElm.each(function(){
+                lines.each(function(key, value){
+
 
                   var SVGRect = $(this)[0].getBBox();
-                  var offset = $this->box_offset;
 
+                  var line_y_pos = (key + 1) * SVGRect.height;
+                  var rect_y_pos = key * SVGRect.height;
+
+                  var line_x_pos = offset;
+
+
+                  $(this)
+                    .attr('fill', color)
+                    .attr('y', line_y_pos)
+                    .attr('x', line_x_pos);
 
                   var coord = {
-                    x: SVGRect.x - offset,
-                    y: SVGRect.y + offset,
+                    x: 0,
+                    y: rect_y_pos - (offset * .1),
                     width: SVGRect.width + (offset * 2),
-                    height: SVGRect.height - offset
+                    height: SVGRect.height + offset
                   };
 
+                  console.log(coord, SVGRect);
 
                   var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
                   rect.setAttribute('x', coord.x);
                   rect.setAttribute('y', coord.y);
                   rect.setAttribute('width', coord.width);
                   rect.setAttribute('height', coord.height);
-                  rect.setAttribute('fill', 'white');
+                  rect.setAttribute('fill', background);
 
-                  svg.prepend(rect);
+                  obj.prepend(rect);
 
-              });
+                });
 
-              var rect = svg.find('rect');
-              var bounds = {
-                  x: new Array(),
-                  y: new Array(),
-                  height: new Array(),
-                  width: new Array()
-              };
 
-              rect.each(function(){
+                var rect = obj.find('rect');
+                var bounds = {
+                  x: [],
+                  y: [],
+                  height: [],
+                  width: []
+                };
 
+                rect.each(function() {
                   var coords = $(this)[0].getBBox();
                   bounds.x.push(coords.x);
                   bounds.y.push(coords.y);
                   bounds.width.push(coords.width);
                   bounds.height.push(coords.height);
+                });
 
-              });
+                bounds.x = {
+                  min: Math.min.apply(Math, bounds.x),
+                  max: Math.max.apply(Math, bounds.x)
+                };
+
+                bounds.y = {
+                  min: Math.min.apply(Math, bounds.y),
+                  max: Math.max.apply(Math, bounds.y)
+                };
+
+                bounds.width = Math.max.apply(Math, bounds.width);
+                bounds.height = Math.max.apply(Math, bounds.height);
+                bounds.vx = left_offset ? 0 : offset;
+                bounds.vy = bounds.y.min;
+                bounds.vw = left_offset ? bounds.width : bounds.width - offset;
+                bounds.vh = Math.abs(bounds.y.min) + bounds.y.max + bounds.height;
+
+                obj[0].setAttribute('viewBox', bounds.vx + ' ' + bounds.vy + ' ' + bounds.vw + ' ' + bounds.vh);
+                obj[0].setAttribute('width', percent_width + '%');
+
+                return this;
+
+              };
+            })(jQuery);
 
 
-              bounds.x = {min: Math.min.apply(Math, bounds.x), max: Math.max.apply(Math, bounds.x)};
-              bounds.y = {min: Math.min.apply(Math, bounds.y), max: Math.max.apply(Math, bounds.y)};
-              bounds.width = Math.max.apply(Math, bounds.width);
-              bounds.height = Math.max.apply(Math, bounds.height);
-              bounds.vx = 0;
-              bounds.vy = bounds.y.min;
-              bounds.vw = bounds.width;
-              bounds.vh = Math.abs(bounds.y.min) + bounds.y.max + bounds.height;
-              console.log(bounds.vw);
-
-              svg[0].setAttribute('viewBox', '0 ' + bounds.vy + ' ' + bounds.vw + ' ' + bounds.vh);
-
-
-              </script>
-
+            $('#{$this->ID}').svgBlock({
+              offset: 7,
+              left_offset: false
+            });
+            </script>
 
           ";
 
