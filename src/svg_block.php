@@ -113,7 +113,7 @@ class svg_block
 
                   var coord = {
                     x: 0,
-                    y: rect_y_pos - (offset * .1),
+                    y: rect_y_pos + (.3 * offset),
                     width: SVGRect.width + (offset * 2),
                     height: SVGRect.height + offset
                   };
@@ -157,13 +157,14 @@ class svg_block
                   min: Math.min.apply(Math, bounds.y),
                   max: Math.max.apply(Math, bounds.y)
                 };
-
+            
                 bounds.width = Math.max.apply(Math, bounds.width);
                 bounds.height = Math.max.apply(Math, bounds.height);
-                bounds.vx = left_offset ? 0 : offset;
+                bounds.vx = left_offset ? offset : 0;
                 bounds.vy = bounds.y.min;
                 bounds.vw = left_offset ? bounds.width : bounds.width - offset;
                 bounds.vh = Math.abs(bounds.y.min) + bounds.y.max + bounds.height;
+
 
                 obj[0].setAttribute('viewBox', bounds.vx + ' ' + bounds.vy + ' ' + bounds.vw + ' ' + bounds.vh);
                 obj[0].setAttribute('width', percent_width + '%');
@@ -175,8 +176,8 @@ class svg_block
 
 
             $('#{$this->ID}').svgBlock({
-              offset: 7,
-              left_offset: false
+              offset: 3,
+              left_offset: true
             });
             </script>
 
